@@ -1,0 +1,5 @@
+mcsdes
+LR - Positive Accuracy:0.557478005865
+LR - Negative Accuracy:0.61495601173
+LR - Neutral Accuracy:0.805278592375
+LR - Positive Accuracy:0.60293255132
