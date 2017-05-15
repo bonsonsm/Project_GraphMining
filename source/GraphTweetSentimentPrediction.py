@@ -26,6 +26,7 @@ class GraphTweetSentimentPrediction:
         bu = BasicFunctions()
         gu = GraphFunctions()
         mu = ModelFunctions()
+        tu = TextFunctions()
         
         # This condition overrides all the other executino parameters 
         # and returns after execution. 
@@ -54,13 +55,15 @@ class GraphTweetSentimentPrediction:
             return
         
         if config_param["execute.preprocessdata"] == "1":
+            
+            str_output = ""
+            #str_output = str_output + "\n" + "In execute.preprocessdata"
             print("In execute.preprocessdata")
-            tu = TextFunctions()
             pd_preprocess_df, pd_negative_train, pd_negative_validate, pd_negative_test, \
                 pd_neutral_train, pd_neutral_validate, pd_neutral_test, \
                 pd_positive_train, pd_positive_validate, pd_positive_test = \
                 tu.preprocessing(full_path, sheet_name, header, X_name, y_name, \
-                    train_percent, validate_percent)
+                    train_percent, validate_percent, 'None', config_param)
                 
             bu.saveObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_preprocess_df.pkl", pd_preprocess_df)
             bu.saveObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_negative_train.pkl", pd_negative_train)
@@ -77,12 +80,26 @@ class GraphTweetSentimentPrediction:
             if validate_percent != 0:
                 pd_validate_data = pd.concat([pd_negative_validate, pd_neutral_validate, pd_positive_validate], ignore_index=True)
                 bu.saveObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_validate_data.pkl", pd_validate_data)
+                #str_output = str_output + "\nTotal pd_validate_data Records:" + str(len(pd_validate_data.index))
                 print("Total pd_validate_data Records:",len(pd_validate_data.index))
             # create the test data by merging the test datas of pd_negative_test, pd_neutral_test, pd_positive_test
             pd_test_data = pd.concat([pd_negative_test, pd_neutral_test, pd_positive_test], ignore_index=True)
             bu.saveObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_test_data.pkl", pd_test_data)
+
             print("Total pd_test_data Records:",len(pd_test_data.index))
-        
+            #str_output = str_output + "\nTotal pd_test_data Records:" +str(len(pd_test_data.index))
+            bu.saveExcelFile("pd_negative_train.xlsx", pd_negative_train, config_param)
+            bu.saveExcelFile("pd_neutral_train.xlsx", pd_neutral_train, config_param)
+            bu.saveExcelFile("pd_positive_train.xlsx", pd_positive_train, config_param)
+            bu.saveExcelFile("pd_validate_data.xlsx", pd_validate_data, config_param)
+            bu.saveExcelFile("pd_test_data.xlsx", pd_test_data, config_param)
+
+            str_output = str_output + "\n############Pre Process Data Completed##################"
+            calculatesm = config_param["execute.calculatesm"]
+            windowsize = config_param["creategraph.window_size"]
+            output_file_name = config_param["data.outputfolder"] + calculatesm + "_w" + windowsize + "_"+"output.txt"
+            bu.saveTextFile(output_file_name, str_output)
+            
         if config_param["execute.creategraphs"] == "1":
             
             #raw_data = {'id': ['1','2'], 'sentence':['What is good for the gardner is also good for the goose','He is a good boy'], 'sentiment': [0,2]}
