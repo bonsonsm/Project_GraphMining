@@ -56,9 +56,12 @@ class BasicFunctions:
         return obj
         
     def saveTextFile(self, file_name, strValue):
-        file = open(file_name,"w") 
-        file.write(strValue) 
-        file.close()
+        with open(file_name, "a") as f:
+            f.write(strValue)
+        f.close()
+        #file = open(file_name,"w") 
+        #file.write(strValue) 
+        #file.close()
         
     def saveExcelFile(self, file_name, df, config_param):
         file_name = config_param["data.intermediatefolder"] + file_name
