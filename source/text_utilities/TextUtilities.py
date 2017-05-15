@@ -10,6 +10,8 @@ import nltk
 #from nltk.stem import *
 from nltk.corpus import sentiwordnet as swn
 
+from basic_utilities.BasicUtilities import BasicFunctions
+
 class TextFunctions:
     
     def getWordScore(self, text, positive_words, negative_words):
@@ -155,8 +157,9 @@ class TextFunctions:
         return train, validate, test
     
     def preprocessing(self,full_path, sheet_name, header, X_name, y_name, \
-            train_percent=.7, validate_percent=0, seed=None):
+            train_percent, validate_percent, seed, config_param):
         print("### Pre Processing ### - Start")
+        str_output = ""
         wordDic=self.createWordExpandDictionary()
         #print("wordDic:", wordDic)
         pd_preprocess_df = pd.read_excel(full_path, sheet_name, header)
@@ -170,37 +173,67 @@ class TextFunctions:
         # For Nouns        
         pd_preprocess_df.loc[:,X_name] = pd_preprocess_df[X_name].apply(lambda x: list(OrderedDict.fromkeys([wnl.lemmatize(item,'n') for item in x])))
         pd_preprocess_df.loc[:,X_name] = pd_preprocess_df[X_name].apply(lambda x: ' '.join(x))
+        str_output = str_output+"\nTotal Records:" +str(len(pd_preprocess_df.index))
         print("Total Records:",len(pd_preprocess_df.index))
         pd_negative = pd_preprocess_df[(pd_preprocess_df[y_name]==0) | (pd_preprocess_df[y_name]==1)]
         pd_negative.loc[:,y_name] = -1
+        str_output = str_output+"\nTotal Negative Records:" +str(len(pd_negative.index))
         print("Total Negative Records:",len(pd_negative.index))
         pd_neutral= pd_preprocess_df[pd_preprocess_df[y_name]==2]
         pd_neutral.loc[:,y_name] = 0
+        str_output = str_output+"\nTotal Neutral Records:" +str(len(pd_neutral.index))
         print("Total Neutral Records:",len(pd_neutral.index))
         pd_positive = pd_preprocess_df[(pd_preprocess_df[y_name]==3) | (pd_preprocess_df[y_name]==4)]
         pd_positive.loc[:,y_name] = 1
+        str_output = str_output+"\nTotal Positive Records:" +str(len(pd_positive.index))+"\n"
         print("Total Positive Records:",len(pd_positive.index))
         print("######## Dividing Negative Set ###########")
         #pd_negative_train, pd_negative_validate, pd_negative_test = self.train_validate_test_split(pd_negative, train_percent=.7, validate_percent=0, seed=None)
         pd_negative_train, pd_negative_validate, pd_negative_test = self.train_validate_test_split(pd_negative, train_percent, validate_percent, seed=None)
-        print("Total pd_negative_train Records:",len(pd_negative_train.index))        
-        print("Total pd_negative_validate Records:",len(pd_negative_validate.index))
-        print("Total pd_negative_test Records:",len(pd_negative_test.index))
+        #print("Total pd_negative_validate Records:",len(pd_negative_validate.index))
+        #print("Total pd_negative_test Records:",len(pd_negative_test.index))
         print("######## Dividing Neutral Set ###########")
         #pd_neutral_train, pd_neutral_validate, pd_neutral_test = self.train_validate_test_split(pd_neutral, train_percent=.7, validate_percent=0, seed=None)
         pd_neutral_train, pd_neutral_validate, pd_neutral_test = self.train_validate_test_split(pd_neutral, train_percent, validate_percent, seed=None)
-        print("Total pd_neutral_train Records:",len(pd_neutral_train.index))        
-        print("Total pd_neutral_validate Records:",len(pd_neutral_validate.index))
-        print("Total pd_neutral_test Records:",len(pd_neutral_test.index))
+        #print("Total pd_neutral_validate Records:",len(pd_neutral_validate.index))
+        #print("Total pd_neutral_test Records:",len(pd_neutral_test.index))
         print("######## Dividing Positive Set ###########")
         #pd_positive_train, pd_positive_validate, pd_positive_test = self.train_validate_test_split(pd_positive, train_percent=.7, validate_percent=0, seed=None)
         pd_positive_train, pd_positive_validate, pd_positive_test = self.train_validate_test_split(pd_positive, train_percent, validate_percent, seed=None)
-        print("Total pd_positive_train Records:",len(pd_positive_train.index))        
-        print("Total pd_positive_validate Records:",len(pd_positive_validate.index))
-        print("Total pd_positive_test Records:",len(pd_positive_test.index))
         
-       
+        str_output = str_output+"\nTotal Train Records:" +str(len(pd_negative_train.index) + len(pd_neutral_train.index) + len(pd_positive_train.index))
+        
+        str_output = str_output+"\npd_negative_train Records:" +str(len(pd_negative_train.index))
+        print("Total pd_negative_train Records:",len(pd_negative_train.index))        
+        
+        str_output = str_output+"\npd_neutral_train Records:" +str(len(pd_neutral_train.index))
+        print("Total pd_neutral_train Records:",len(pd_neutral_train.index))        
+        
+        str_output = str_output+"\npd_positive_train Records:" +str(len(pd_positive_train.index))+"\n"
+        print("\npd_positive_train Records:",len(pd_positive_train.index))        
+        
+        #print("Total pd_positive_validate Records:",len(pd_positive_validate.index))
+        #print("Total pd_positive_test Records:",len(pd_positive_test.index))
+        
+        str_output = str_output+"\nTotal Validate Records:" +str(len(pd_negative_validate.index) + len(pd_neutral_validate.index) + len(pd_positive_validate.index))
+        
+        str_output = str_output+"\npd_negative_validate Records:" +str(len(pd_negative_validate.index))
+        str_output = str_output+"\npd_neutral_validate Records:" +str(len(pd_neutral_validate.index))
+        str_output = str_output+"\npd_positive_validate Records:" +str(len(pd_positive_validate.index))+"\n"
+        
+        str_output = str_output+"\nTotal Test Records:" +str(len(pd_negative_test.index) + len(pd_neutral_test.index) + len(pd_positive_test.index))
+        str_output = str_output+"\npd_negative_test Records:" +str(len(pd_negative_test.index))
+        str_output = str_output+"\npd_neutral_test Records:" +str(len(pd_neutral_test.index))
+        str_output = str_output+"\npd_positive_test Records:" +str(len(pd_positive_test.index))+"\n"
+        
+        
         print("### Pre Processing ### - End")
+        bu = BasicFunctions()
+        calculatesm = config_param["execute.calculatesm"]
+        windowsize = config_param["creategraph.window_size"]
+        output_file_name = config_param["data.outputfolder"] + calculatesm + "_w" + windowsize + "_"+"output.txt"
+        bu.saveTextFile(output_file_name, str_output)
+        
         #return pd_preprocess_df, df_first_half, df_second_half, pd_first_negative, pd_first_neutral, pd_first_positive
         return pd_preprocess_df, pd_negative_train, pd_negative_validate, pd_negative_test, \
             pd_neutral_train, pd_neutral_validate, pd_neutral_test, \
