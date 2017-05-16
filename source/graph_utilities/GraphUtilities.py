@@ -184,6 +184,7 @@ class GraphFunctions:
         
     def printGraphTable(self, DG):
         print("### In PrintGraphTable")
+        str_graph=""
         #print(DG.edges(data=True))
         l = []
         for n1,n2,attr in DG.edges(data=True):
@@ -191,18 +192,19 @@ class GraphFunctions:
             #value  = str(DG.node[n2]['order']) + " "+ n1 + " "+n2
             #print(DG.node[n1]['order'], DG.node[n2]['order'], n1,n2)
             #d[key] = value
-            l_value = str(DG.node[n1]['order']) + " "+str(DG.node[n2]['order']) + " "+ n1 + " "+n2
+            l_value = str(DG.node[n1]['order']) + " "+str(DG.node[n2]['order']) + " "+ n1 + " "+n2+" "+str(attr['weight'])
             l.append(l_value)
         l.sort()
         for v in l:
             print(v)
+            str_graph = str_graph + v +"\n"
         #od = collections.OrderedDict(sorted(d.items()))
         #for k, v in od.items(): 
         #    print(k, v)
         
         #for a, b, data in sorted(DG.edges(data=True), key=lambda(a, b, data): data['weight']):
         #    print('{a} {b} {w}'.format(a=a, b=b, w=data['weight']))
-    
+        return str_graph
         
     def getMCSNS(self, maingraph, subgraph):
         """
@@ -306,7 +308,7 @@ class GraphFunctions:
         #print("Containment Similarity:", cs)
         return cs;
         
-    def compute_sm(self, dg_neg, dg_zero, dg_pos, pd_validate_data, config_param):
+    def compute_sm(self, dg_neg, dg_zero, dg_pos, pd_validate_data, config_param, str_called_from):
         """
         Compute and return the Containment Similarity Matrix DF that contains 
         sentence_id
@@ -318,6 +320,7 @@ class GraphFunctions:
         classification
         """
         print(" Compute CSM ### - Start")
+        
         not_accurate=0
         accurate=0
         duplicate=0
@@ -327,21 +330,14 @@ class GraphFunctions:
         two_max_values=""
         
         calculatesm = config_param["execute.calculatesm"]
+        
         print("calculatesm:", calculatesm)
-        
-        object_name_full = calculatesm +".validationfull.pkl"
-        object_name_correct = calculatesm +".validationcorrect.pkl"
-        object_name_test = calculatesm +".test.pkl"
-        
-        excel_name_full = calculatesm +".validationfull.xlsx"
-        excel_name_correct = calculatesm +".validationcorrect.xlsx"
-        excel_name_test = calculatesm +".test.xlsx"
+        str_output = "\n############ Computing "+calculatesm+" similarity matrix for "+str_called_from+" data##################\n"        
         
         neg_value = 0
         zero_value = 0
         pos_value = 0
         
-        #row_dict = {}
         row_list =[]
         ctr = 0
         
@@ -352,10 +348,11 @@ class GraphFunctions:
             ctr = ctr +1
             print("ctr for pd_validate_data", ctr)
             accuracy=0
-            #objGraphTraversal = gt()
             sentence_id = row['SentenceID']
+            
             #print("Computing for Sentence ID:",sentence_id)
             sentence = row['Sentence']
+            str_output = str_output + "\n-----SENTENCE-------\n"+sentence            
             actual_sentiment_score = row['Sentiment']
             
             #if actual_sentiment_score == 0 or actual_sentiment_score ==1:
@@ -371,7 +368,9 @@ class GraphFunctions:
                 actual_sentiment="Neutral"
             if actual_sentiment_score == 1:
                 actual_sentiment="Positive"
-                
+            
+            
+            
             #print("sentence_id",sentence_id)
             #print("sentence",sentence)
             #print("actual_sentiment",actual_sentiment_score)
@@ -382,8 +381,9 @@ class GraphFunctions:
             sentences_to_take=1
             window_size=1
             dg_sentence_graph, avg_tokens_per_sentence_main = self.createGraph(pd_sentence, sentences_to_take, window_size)
+            str_output = str_output + "\n"+ self.printGraphTable(dg_sentence_graph)
             #dg_sentence_graph = self.createSentenceGraph(sentence)
-            
+            str_output = str_output + "\nCalculating " + calculatesm
             if calculatesm == "csm":
                 neg_value = self.getContainmentSimilarity(dg_sentence_graph, dg_neg)
                 zero_value = self.getContainmentSimilarity(dg_sentence_graph, dg_zero)
@@ -401,7 +401,10 @@ class GraphFunctions:
                 zero_value = self.getMCSDES(dg_sentence_graph, dg_zero)
                 pos_value = self.getMCSDES(dg_sentence_graph, dg_pos)    
             
-                
+            str_output = str_output + "\nNegative Value: " + str(neg_value)
+            str_output = str_output + " Neutral Value: " + str(zero_value)
+            str_output = str_output + " Positive Value: " + str(pos_value)
+            
             #print("neg_value:",neg_value)
             #print("zero_value:",zero_value)
             #print("pos_value:",pos_value)
@@ -418,6 +421,10 @@ class GraphFunctions:
                 if pos_value == neg_value or pos_value == zero_value:
                     two_max_values="Yes"  
             #print("cal_sentiment:",cal_sentiment)
+            
+            str_output = str_output + "\nCalculated Sentiment : " + cal_sentiment
+            str_output = str_output + " two_max_values : " + two_max_values
+            str_output = str_output + "\nActual Sentiment : "+actual_sentiment
             
             if cal_sentiment == actual_sentiment:
                 accuracy=1
@@ -446,12 +453,20 @@ class GraphFunctions:
             
             #if ctr == 5:
             #    break
-            
-        print("Accurate with Duplicate:",accurate)
-        print("Duplicates:",duplicate)
-        print("Accurate without Duplicate:",accurate - duplicate)
-        print("Not Accurate:",not_accurate)
+        
+        
+        str_output = str_output + "\n----------SUMMARY ---------------\n"
+        print("Total correct predictions including Two equal scores:",accurate)
+        str_output = str_output + "\nTotal records: " + str(accurate + not_accurate)
+        str_output = str_output + "\nTotal correct predictions including Two equal scores: " + str(accurate)
+        print("Total two equal scores:",duplicate)
+        str_output = str_output + "\nTotal two equal scores: " + str(duplicate)
+        print("Total correct predictions with one highest score:",accurate - duplicate)
+        str_output = str_output + "\nTotal correct predictions with one highest score: " + str(accurate - duplicate)
+        print("Total Incorrect Predictions:",not_accurate)
+        str_output = str_output + "\nTotal Incorrect Predictions: " + str(not_accurate)
         print("Accuracy %: ",(accurate - duplicate) / (accurate + not_accurate))
+        str_output = str_output + "\nAccuracy%: " + str((accurate - duplicate) / (accurate + not_accurate))
         
         column_names = ['SentenceID','Sentence', 'NegativeScore',"NeutralScore","PositiveScore","ActualSentiment","AutomatedSentiment","Accuracy","TwoMaxValues","SentiWordnetSentiment", "Positive-Senti", "Negative-Senti", "Neutral-Senti"]            
         
@@ -459,32 +474,43 @@ class GraphFunctions:
         #if run_type == "validation":
         
             
-        if config_param["execute.computecsm_validationdata"] == "1":
-            newDF = pd.DataFrame(data=row_list, columns = column_names)
+        if str_called_from == "validation":
+            excel_name_full = calculatesm +".validationfull.xlsx"
+            object_name_full = calculatesm +".validationfull.pkl"
             
+            excel_name_correct = calculatesm +".validationcorrect.xlsx"
+            object_name_correct = calculatesm +".validationcorrect.pkl"
+            
+            newDF = pd.DataFrame(data=row_list, columns = column_names)
             # Get only those records where the results are correct
             newDF_correct = newDF.loc[(newDF['TwoMaxValues'] == 'No') & newDF['Accuracy'] == 1]
             #print(newDF)
-            
             #writer = pd.ExcelWriter('..\\data\\intermediate\\Validation_MCS.xlsx')
             writer = pd.ExcelWriter(config_param["data.intermediatefolder"] + excel_name_full)
             newDF.to_excel(writer, 'DataFrame')
             writer.save()
-            
             bu.saveObject(config_param["data.intermediatefolder"] + object_name_full, newDF)
-            
             writer = pd.ExcelWriter(config_param["data.intermediatefolder"] + excel_name_correct)
             newDF_correct.to_excel(writer, 'DataFrame')
             writer.save()
             bu.saveObject(config_param["data.intermediatefolder"] + object_name_correct, newDF_correct)
             
-        if config_param["execute.computecsm_testdata"] == "1":
+        if str_called_from == "test":
+            excel_name_test = calculatesm +".test.xlsx"
+            object_name_test = calculatesm +".test.pkl"
+        
             TestDF = pd.DataFrame(data=row_list, columns = column_names)
             writer = pd.ExcelWriter(config_param["data.intermediatefolder"] + excel_name_test)
             TestDF.to_excel(writer, 'DataFrame')
             writer.save()
             bu.saveObject(config_param["data.intermediatefolder"] + object_name_test, TestDF)
         
+        str_output = str_output + "\n############ Ended Computing "+calculatesm+" similarity matrix for "+str_called_from+" data##################\n"        
+        calculatesm = config_param["execute.calculatesm"]
+        windowsize = config_param["creategraph.window_size"]
+        output_file_name = config_param["data.outputfolder"] + calculatesm + "_w" + windowsize + "_"+"output.txt"
+        bu.saveTextFile(output_file_name, str_output)
+            
         print("### Compute CSM ### - End")
         #return newDF_correct        
         

@@ -94,7 +94,7 @@ class GraphTweetSentimentPrediction:
             bu.saveExcelFile("pd_validate_data.xlsx", pd_validate_data, config_param)
             bu.saveExcelFile("pd_test_data.xlsx", pd_test_data, config_param)
 
-            str_output = str_output + "\n############Pre Process Data Completed##################"
+            str_output = str_output + "\n############Pre Process Data Completed##################\n"
             calculatesm = config_param["execute.calculatesm"]
             windowsize = config_param["creategraph.window_size"]
             output_file_name = config_param["data.outputfolder"] + calculatesm + "_w" + windowsize + "_"+"output.txt"
@@ -116,17 +116,34 @@ class GraphTweetSentimentPrediction:
             neutral_graph, avg_tokens_per_sentence_main = gu.createGraph(pd_neutral_train, sentences_to_take, window_size)
             positive_graph, avg_tokens_per_sentence_main = gu.createGraph(pd_positive_train, sentences_to_take, window_size)
             
-            print("negative_graph: ",negative_graph.nodes)
-            print("neutral_graph: ",neutral_graph.nodes)
-            print("positive_graph: ",positive_graph.nodes)
+            str_output = ""
+            str_output = str_output + "\n############ Create Graphs ##################"
+            str_output = str_output + "\nNegative Graph \nNodes:"+str(len(negative_graph.nodes()))+" Edges:"+str(len(negative_graph.edges()))
+            str_output = str_output + "\nNegative Graph \n"+gu.printGraphTable(negative_graph)
+            
+            str_output = str_output + "\nNeutral Graph \nNodes:"+str(len(neutral_graph.nodes()))+" Edges:"+str(len(neutral_graph.edges()))
+            str_output = str_output + "\nNeutral Graph \n"+gu.printGraphTable(neutral_graph)
+            
+            str_output = str_output + "\nPositive Graph\nNodes:"+str(len(positive_graph.nodes()))+" Edges:"+str(len(positive_graph.edges()))
+            str_output = str_output + "\nPositive Graph \n"+gu.printGraphTable(positive_graph)
+            
+            str_output = str_output + "\n############ Create Graphs Completed ##################"
+            print("negative_graph: ",len(negative_graph.nodes()))
+            print("neutral_graph: ", len(neutral_graph.nodes()))
+            print("positive_graph: ", len(positive_graph.nodes()))
             
             bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.negative_graph.pkl", negative_graph)
             bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.neutral_graph.pkl", neutral_graph)
             bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.positive_graph.pkl", positive_graph)
             
+            calculatesm = config_param["execute.calculatesm"]
+            output_file_name = config_param["data.outputfolder"] + calculatesm + "_w" + windowsize + "_"+"output.txt"
+            bu.saveTextFile(output_file_name, str_output)
+            
             #gu.drawGraph(negative_graph)
             #gu.printGraphTable(negative_graph)
         
+        # This executes for creation of validation data
         if config_param["execute.computecsm_validationdata"] == "1":
             negative_graph = bu.loadObject(config_param["data.intermediatefolder"] + "creategraph.negative_graph.pkl")
             neutral_graph = bu.loadObject(config_param["data.intermediatefolder"] + "creategraph.neutral_graph.pkl")
@@ -134,19 +151,22 @@ class GraphTweetSentimentPrediction:
             pd_validate_data = bu.loadObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_validate_data.pkl")
             #run_type = config_param["computecsm.runtype"]
             start_compute_sm = timer()
+            str_called_from = "validation"
             # Computing the Containment Similarity Matrix for the validation data
-            gu.compute_sm(negative_graph, neutral_graph, positive_graph, pd_validate_data, config_param)
+            gu.compute_sm(negative_graph, neutral_graph, positive_graph, pd_validate_data, config_param, str_called_from)
             end_compute_sm = timer()
             print("Time taken by compute_csm():",end_compute_sm - start_compute_sm)
-            
-        if config_param["execute.computecsm_testdata"] == "1" and config_param["execute.computecsm_validationdata"] == "0":
+        
+        # This executes for creation of test data
+        if config_param["execute.computecsm_testdata"] == "1":
             negative_graph = bu.loadObject(config_param["data.intermediatefolder"] + "creategraph.negative_graph.pkl")
             neutral_graph = bu.loadObject(config_param["data.intermediatefolder"] + "creategraph.neutral_graph.pkl")
             positive_graph = bu.loadObject(config_param["data.intermediatefolder"] + "creategraph.positive_graph.pkl")
             pd_test_data = bu.loadObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_test_data.pkl")
             start_compute_sm = timer()
+            str_called_from = "test"
             # Computing the Containment Similarity Matrix for the test data
-            gu.compute_sm(negative_graph, neutral_graph, positive_graph, pd_test_data, config_param)
+            gu.compute_sm(negative_graph, neutral_graph, positive_graph, pd_test_data, config_param, str_called_from)
             end_compute_sm = timer()
             print("Time taken by compute_csm():",end_compute_sm - start_compute_sm)
         

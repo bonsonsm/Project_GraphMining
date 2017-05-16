@@ -2,4 +2,8 @@ csm
 LR - Positive Accuracy:0.590988882387
 LR - Negative Accuracy:0.622001170275
 LR - Neutral Accuracy:0.806319485079
-LR - Positive Accuracy:0.634874195436
+LR - Positive Accuracy:0.634874195436csm
+LR - Positive Accuracy:0.4
+LR - Negative Accuracy:0.8
+LR - Neutral Accuracy:0.8
+LR - Positive Accuracy:0.8

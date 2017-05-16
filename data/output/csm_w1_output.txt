@@ -1,0 +1,226 @@
+
+Total Records:13
+Total Negative Records:3
+Total Neutral Records:3
+Total Positive Records:7
+
+Total Train Records:4
+pd_negative_train Records:1
+pd_neutral_train Records:1
+pd_positive_train Records:2
+
+Total Validate Records:4
+pd_negative_validate Records:1
+pd_neutral_validate Records:1
+pd_positive_validate Records:2
+
+Total Test Records:5
+pd_negative_test Records:1
+pd_neutral_test Records:1
+pd_positive_test Records:3
+
+############Pre Process Data Completed##################
+
+############ Create Graphs ##################
+Negative Graph 
+Nodes:12 Edges:11
+Negative Graph 
+0 1 aggressive self 1
+1 2 self glorification 1
+10 11 recommend . 1
+2 3 glorification and 1
+3 4 and a 1
+4 5 a manipulative 1
+5 6 manipulative whitewash 1
+6 7 whitewash leave 1
+7 8 leave little 1
+8 9 little to 1
+9 10 to recommend 1
+
+Neutral Graph 
+Nodes:25 Edges:24
+Neutral Graph 
+0 1 thank largely 1
+1 2 largely to 1
+10 11 in 60 1
+11 12 60 minute 1
+12 13 minute rest 1
+13 14 rest just 1
+14 15 just an 1
+15 16 an overexpose 1
+16 17 overexpose waste 1
+17 18 waste of 1
+18 19 of film 1
+19 20 film a 1
+2 3 to williams 1
+20 21 a relic 1
+21 22 relic bygone 1
+22 23 bygone era 1
+23 24 era . 1
+3 4 williams all 1
+4 5 all the 1
+5 6 the interest 1
+6 7 interest development 1
+7 8 development be 1
+8 9 be process 1
+9 10 process in 1
+
+Positive Graph
+Nodes:38 Edges:43
+Positive Graph 
+0 1 a welcome 1
+0 34 a read 1
+1 2 welcome relief 1
+10 11 to be 1
+11 12 be mythic 1
+11 29 be earnest 1
+12 13 mythic this 1
+13 14 this one 1
+14 15 one sweet 1
+15 16 sweet and 1
+16 17 and modest 1
+17 18 modest ultimately 1
+18 19 ultimately win 1
+19 20 win story 1
+2 3 relief from 1
+20 21 story so 1
+21 22 so i 1
+21 30 so thick 1
+22 23 i like 1
+23 0 like a 1
+23 24 like it 1
+24 25 it . 1
+24 33 it play 1
+26 27 the importance 1
+27 28 importance of 1
+28 11 of be 1
+29 21 earnest so 1
+3 35 from bartlett 1
+3 4 from baseball 1
+30 31 thick with 1
+31 32 with wit 1
+32 24 wit it 1
+33 23 play like 1
+34 3 read from 1
+35 36 bartlett familiar 1
+36 37 familiar quotation 1
+37 22 quotation i 1
+4 5 baseball movie 1
+5 6 movie that 1
+6 7 that try 1
+7 8 try too 1
+8 9 too hard 1
+9 10 hard to 1
+
+############ Create Graphs Completed ##################
+############ Computing csm similarity matrix for validation data##################
+
+-----SENTENCE-------
+there be little to recommend snow dog unless one consider cliched dialogue and perverse escapism a source of high hilarity so you would have hard time watch this.
+0 1 there be 1
+1 2 be little 1
+10 11 cliched dialogue 1
+11 12 dialogue and 1
+12 13 and perverse 1
+13 14 perverse escapism 1
+14 15 escapism a 1
+15 16 a source 1
+16 17 source of 1
+17 18 of high 1
+18 19 high hilarity 1
+19 20 hilarity so 1
+2 3 little to 1
+20 21 so you 1
+21 22 you would 1
+22 23 would have 1
+23 24 have hard 1
+24 25 hard time 1
+25 26 time watch 1
+26 27 watch this 1
+27 28 this . 1
+3 4 to recommend 1
+4 5 recommend snow 1
+5 6 snow dog 1
+6 7 dog unless 1
+7 8 unless one 1
+8 9 one consider 1
+9 10 consider cliched 1
+
+Calculating csm
+Negative Value: 0.18181818181818182 Neutral Value: 0.0 Positive Value: 0.0
+Calculated Sentiment : Negative two_max_values : No
+Actual Sentiment : Negative
+-----SENTENCE-------
+downright transparent be the script endless assault of embarrassingly ham fisted sex joke that reek a rewrite design to garner film cooler pg 13 rat make it relic bygone era
+0 1 downright transparent 1
+1 2 transparent be 1
+10 11 fisted sex 1
+11 12 sex joke 1
+12 13 joke that 1
+13 14 that reek 1
+14 15 reek a 1
+15 16 a rewrite 1
+16 17 rewrite design 1
+17 18 design to 1
+18 19 to garner 1
+19 20 garner film 1
+2 3 be the 1
+20 21 film cooler 1
+21 22 cooler pg 1
+22 23 pg 13 1
+23 24 13 rat 1
+24 25 rat make 1
+25 26 make it 1
+26 27 it relic 1
+27 28 relic bygone 1
+28 29 bygone era 1
+3 4 the script 1
+4 5 script endless 1
+5 6 endless assault 1
+6 7 assault of 1
+7 8 of embarrassingly 1
+8 9 embarrassingly ham 1
+9 10 ham fisted 1
+
+Calculating csm
+Negative Value: 0.0 Neutral Value: 0.08333333333333333 Positive Value: 0.0
+Calculated Sentiment : Neutral two_max_values : No
+Actual Sentiment : Neutral
+-----SENTENCE-------
+the performance be absolutely worth seeing.
+0 1 the performance 1
+1 2 performance be 1
+2 3 be absolutely 1
+3 4 absolutely worth 1
+4 5 worth seeing 1
+5 6 seeing . 1
+
+Calculating csm
+Negative Value: 0.0 Neutral Value: 0.0 Positive Value: 0.0
+Calculated Sentiment : Negative two_max_values : Yes
+Actual Sentiment : Positive
+-----SENTENCE-------
+i still like moonlight mile better judgment be damn .
+0 1 i still 1
+1 2 still like 1
+2 3 like moonlight 1
+3 4 moonlight mile 1
+4 5 mile better 1
+5 6 better judgment 1
+6 7 judgment be 1
+7 8 be damn 1
+8 9 damn . 1
+
+Calculating csm
+Negative Value: 0.0 Neutral Value: 0.0 Positive Value: 0.0
+Calculated Sentiment : Negative two_max_values : Yes
+Actual Sentiment : Positive
+----------SUMMARY ---------------
+
+Total records: 4
+Total correct predictions including Two equal scores: 2
+Total two equal scores: 0
+Total correct predictions with one highest score: 2
+Total Incorrect Predictions: 2
+Accuracy%: 0.5
+############ Ended Computing csm similarity matrix for validation data##################
