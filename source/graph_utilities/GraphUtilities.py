@@ -52,6 +52,8 @@ class GraphFunctions:
             if G_source.has_edge(n1,n2) :
                 #print(G_source.has_edge(n1,n2))
                 matching_graph.add_edge(n1,n2,weight=1)
+                matching_graph.node[n1]['order'] = G_new.node[n1]['order']
+                matching_graph.node[n2]['order'] = G_new.node[n2]['order']
         
         graphs = list(nx.connected_component_subgraphs(matching_graph))
         
@@ -73,6 +75,8 @@ class GraphFunctions:
            w = attr['weight']
            total_weight=total_weight+w
         #print(total_weight)
+        #print("***printing MCS***")
+        #self.printGraphTable(mcs_graph)
         return mcs_graph, total_weight
                 
       
@@ -183,7 +187,7 @@ class GraphFunctions:
         nx.draw(DG)        
         
     def printGraphTable(self, DG):
-        print("### In PrintGraphTable")
+        #print("### In PrintGraphTable")
         str_graph=""
         #print(DG.edges(data=True))
         l = []
@@ -196,7 +200,7 @@ class GraphFunctions:
             l.append(l_value)
         l.sort()
         for v in l:
-            print(v)
+            #print(v)
             str_graph = str_graph + v +"\n"
         #od = collections.OrderedDict(sorted(d.items()))
         #for k, v in od.items(): 
@@ -211,22 +215,27 @@ class GraphFunctions:
         Guage the similarity between the N-Gram graphs.
         Total No. of Nodes in MCS / Number of edges of smaller graph
         """
-        #print("In getMCSNS")
+        print("In getMCSNS")
         mcs, weight = self.getMCS(maingraph, subgraph)
+        print("after ", weight)
         mcs_nodes = len(mcs.nodes())
+        print("mcs_nodes ", mcs_nodes)
         nodes_maingraph = len(maingraph.nodes())
+        print("nodes_maingraph ", nodes_maingraph)
         nodes_subgraph = len(subgraph.nodes())
+        print("nodes_subgraph ", nodes_subgraph)
         if nodes_maingraph == 0 or nodes_subgraph == 0:
-            return 0
+            return 0,0,0
         mcsns=0.0
-        #print("Numerator:",mcs_nodes)
+        print("Numerator:",mcs_nodes)
         if(nodes_subgraph<nodes_maingraph):
             mcsns = mcs_nodes/nodes_subgraph
-            #print("denominator:",nodes_subgraph)
+            print("denominator:",nodes_subgraph)
         else:
             mcsns = mcs_nodes/nodes_maingraph
-            #print("denominator:",nodes_maingraph)
-        return mcsns;
+            print("denominator:",nodes_maingraph)
+        print("End getMCSNS")
+        return mcsns, mcs, weight;
         
     def getMCSUES(self, maingraph, subgraph):
         """
@@ -248,7 +257,7 @@ class GraphFunctions:
         else:
             mcsues = mcs_edges/nodes_maingraph
             #print("Denominator:",edges_maingraph)
-        return mcsues;
+        return mcsues, mcs, weight;
         
     def getMCSDES(self, maingraph, subgraph):
         """
@@ -272,7 +281,7 @@ class GraphFunctions:
             #mcsdes = mcs_edges/nodes_maingraph
             mcsdes = weight/nodes_maingraph
             #print("Denominator:",nodes_maingraph)
-        return mcsdes;
+        return mcsdes, mcs, weight;
     
     def getContainmentSimilarity(self, maingraph, subgraph):
         """
@@ -328,6 +337,11 @@ class GraphFunctions:
         cal_sentiment=""
         actual_sentiment=""
         two_max_values=""
+        
+        # temporary assignment just o initialize variables
+        n_mcs=dg_neg
+        z_mcs=dg_neg
+        p_mcs=dg_neg
         
         calculatesm = config_param["execute.calculatesm"]
         
@@ -389,70 +403,89 @@ class GraphFunctions:
                 zero_value = self.getContainmentSimilarity(dg_sentence_graph, dg_zero)
                 pos_value = self.getContainmentSimilarity(dg_sentence_graph, dg_pos)
             elif calculatesm == "mcsns":
-                neg_value = self.getMCSNS(dg_sentence_graph, dg_neg)
-                zero_value = self.getMCSNS(dg_sentence_graph, dg_zero)
-                pos_value = self.getMCSNS(dg_sentence_graph, dg_pos)
+                neg_value, n_mcs, n_weight = self.getMCSNS(dg_sentence_graph, dg_neg)
+                zero_value, z_mcs, z_weight = self.getMCSNS(dg_sentence_graph, dg_zero)
+                pos_value, p_mcs, p_weight = self.getMCSNS(dg_sentence_graph, dg_pos)
             elif calculatesm == "mcsues":
-                neg_value = self.getMCSUES(dg_sentence_graph, dg_neg)
-                zero_value = self.getMCSUES(dg_sentence_graph, dg_zero)
-                pos_value = self.getMCSUES(dg_sentence_graph, dg_pos)    
+                neg_value, n_mcs, n_weight = self.getMCSUES(dg_sentence_graph, dg_neg)
+                zero_value, z_mcs, z_weight = self.getMCSUES(dg_sentence_graph, dg_zero)
+                pos_value, p_mcs, p_weight = self.getMCSUES(dg_sentence_graph, dg_pos)    
             elif calculatesm == "mcsdes":
-                neg_value = self.getMCSDES(dg_sentence_graph, dg_neg)
-                zero_value = self.getMCSDES(dg_sentence_graph, dg_zero)
-                pos_value = self.getMCSDES(dg_sentence_graph, dg_pos)    
+                neg_value, n_mcs, n_weight = self.getMCSDES(dg_sentence_graph, dg_neg)
+                zero_value, z_mcs, z_weight = self.getMCSDES(dg_sentence_graph, dg_zero)
+                pos_value, p_mcs, p_weight = self.getMCSDES(dg_sentence_graph, dg_pos)    
             
-            str_output = str_output + "\nNegative Value: " + str(neg_value)
-            str_output = str_output + " Neutral Value: " + str(zero_value)
-            str_output = str_output + " Positive Value: " + str(pos_value)
-            
-            #print("neg_value:",neg_value)
-            #print("zero_value:",zero_value)
-            #print("pos_value:",pos_value)
-            if neg_value >= zero_value and neg_value >= pos_value:
-                cal_sentiment = "Negative"
-                if neg_value == zero_value or neg_value == pos_value:
-                    two_max_values="Yes"    
-            elif zero_value >= neg_value and zero_value >= pos_value:
-                cal_sentiment = "Neutral"   
-                if zero_value == neg_value or zero_value == pos_value:
-                    two_max_values="Yes"    
-            elif pos_value >= neg_value and pos_value >= zero_value:
-                cal_sentiment = "Positive"
-                if pos_value == neg_value or pos_value == zero_value:
-                    two_max_values="Yes"  
-            #print("cal_sentiment:",cal_sentiment)
-            
-            str_output = str_output + "\nCalculated Sentiment : " + cal_sentiment
-            str_output = str_output + " two_max_values : " + two_max_values
-            str_output = str_output + "\nActual Sentiment : "+actual_sentiment
-            
-            if cal_sentiment == actual_sentiment:
-                accuracy=1
-                accurate += 1
-                if two_max_values=="Yes"  :
-                    duplicate += 1
+            if neg_value == zero_value == pos_value:
+                str_output = str_output + "\nNegative MCS: 0" 
+                str_output = str_output + "\nNegative Value: 0" 
+                
+                str_output = str_output + "\nNeutral MCS: " 
+                str_output = str_output + " Neutral Value: "
+                
+                str_output = str_output + "\nPositive MCS: " 
+                str_output = str_output + " Positive Value: "
+                cal_sentiment = "None"
             else:
-                accuracy=0
-                not_accurate += 1
-            
-            #row_dict["SentenceID"]=sentence_id
-            #row_dict["Sentence"]=sentence
-            #row_dict["NegativeScore"]=neg_value
-            #row_dict["NeutralScore"]=zero_value
-            #row_dict["PositiveScore"]=pos_value
-            #row_dict["AutomatedSentiment"]=cal_sentiment
-            #row_dict["ActualSentiment"]=actual_sentiment
-            #row_dict["Accuracy"]=accuracy
-            SentiWordnetSentiment, pos_score, neg_score, neutral_score = tu.getSentiWordnetScore(sentence)
-            
-            # take the SentiWordnetSentiment value if 2 terms are giving similar sentiments
-            if two_max_values=="Yes":
-                cal_sentiment=SentiWordnetSentiment
-            
-            row_list.append([sentence_id,sentence,neg_value,zero_value,pos_value,actual_sentiment,cal_sentiment,accuracy,two_max_values, SentiWordnetSentiment, pos_score, neg_score, neutral_score])
-            
-            #if ctr == 5:
-            #    break
+                str_output = str_output + "\nNegative MCS: " + self.printGraphTable(n_mcs)
+                str_output = str_output + "\nNegative Value: " + str(neg_value)
+                
+                str_output = str_output + "\nNeutral MCS: " + self.printGraphTable(z_mcs)
+                str_output = str_output + " Neutral Value: " + str(zero_value)
+                
+                str_output = str_output + "\nPositive MCS: " + self.printGraphTable(p_mcs)
+                str_output = str_output + " Positive Value: " + str(pos_value)
+                
+                #print("neg_value:",neg_value)
+                #print("zero_value:",zero_value)
+                #print("pos_value:",pos_value)
+                #if neg_value == zero_value == pos_value == 0:
+                #    cal_sentiment = "None"
+                #elif neg_value >= zero_value and neg_value >= pos_value:
+                if neg_value >= zero_value and neg_value >= pos_value:
+                    cal_sentiment = "Negative"
+                    if neg_value == zero_value or neg_value == pos_value:
+                        two_max_values="Yes"    
+                elif zero_value >= neg_value and zero_value >= pos_value:
+                    cal_sentiment = "Neutral"   
+                    if zero_value == neg_value or zero_value == pos_value:
+                        two_max_values="Yes"    
+                elif pos_value >= neg_value and pos_value >= zero_value:
+                    cal_sentiment = "Positive"
+                    if pos_value == neg_value or pos_value == zero_value:
+                        two_max_values="Yes"  
+                #print("cal_sentiment:",cal_sentiment)
+                
+                str_output = str_output + "\nCalculated Sentiment : " + cal_sentiment
+                str_output = str_output + " two_max_values : " + two_max_values
+                str_output = str_output + "\nActual Sentiment : "+actual_sentiment
+                
+                if cal_sentiment == actual_sentiment:
+                    accuracy=1
+                    accurate += 1
+                    if two_max_values=="Yes"  :
+                        duplicate += 1
+                else:
+                    accuracy=0
+                    not_accurate += 1
+                
+                #row_dict["SentenceID"]=sentence_id
+                #row_dict["Sentence"]=sentence
+                #row_dict["NegativeScore"]=neg_value
+                #row_dict["NeutralScore"]=zero_value
+                #row_dict["PositiveScore"]=pos_value
+                #row_dict["AutomatedSentiment"]=cal_sentiment
+                #row_dict["ActualSentiment"]=actual_sentiment
+                #row_dict["Accuracy"]=accuracy
+                SentiWordnetSentiment, pos_score, neg_score, neutral_score = tu.getSentiWordnetScore(sentence)
+                
+                # take the SentiWordnetSentiment value if 2 terms are giving similar sentiments
+                if two_max_values=="Yes":
+                    cal_sentiment=SentiWordnetSentiment
+                
+                row_list.append([sentence_id,sentence,neg_value,zero_value,pos_value,actual_sentiment,cal_sentiment,accuracy,two_max_values, SentiWordnetSentiment, pos_score, neg_score, neutral_score])
+                
+                #if ctr == 5:
+                #    break
         
         
         str_output = str_output + "\n----------SUMMARY ---------------\n"

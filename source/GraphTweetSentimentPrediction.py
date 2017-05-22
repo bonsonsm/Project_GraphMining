@@ -57,13 +57,14 @@ class GraphTweetSentimentPrediction:
         if config_param["execute.preprocessdata"] == "1":
             
             str_output = ""
+            seed_val=1000
             #str_output = str_output + "\n" + "In execute.preprocessdata"
             print("In execute.preprocessdata")
             pd_preprocess_df, pd_negative_train, pd_negative_validate, pd_negative_test, \
                 pd_neutral_train, pd_neutral_validate, pd_neutral_test, \
                 pd_positive_train, pd_positive_validate, pd_positive_test = \
                 tu.preprocessing(full_path, sheet_name, header, X_name, y_name, \
-                    train_percent, validate_percent, 'None', config_param)
+                    train_percent, validate_percent, seed_val, config_param)
                 
             bu.saveObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_preprocess_df.pkl", pd_preprocess_df)
             bu.saveObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_negative_train.pkl", pd_negative_train)
@@ -137,7 +138,7 @@ class GraphTweetSentimentPrediction:
             bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.positive_graph.pkl", positive_graph)
             
             calculatesm = config_param["execute.calculatesm"]
-            output_file_name = config_param["data.outputfolder"] + calculatesm + "_w" + windowsize + "_"+"output.txt"
+            output_file_name = config_param["data.outputfolder"] + calculatesm + "_w" + str(window_size) + "_"+"output.txt"
             bu.saveTextFile(output_file_name, str_output)
             
             #gu.drawGraph(negative_graph)

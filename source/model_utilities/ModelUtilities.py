@@ -25,19 +25,23 @@ class ModelFunctions:
         str_output = calculatesm
         print("calculatesm:", calculatesm)
         
-        object_name_full = calculatesm +".validationfull.pkl"
+        str_output = "\n############ Creating model for "+calculatesm+" similarity matrix for window size "+windowsize+" ##################\n"        
+        
+        #object_name_full = calculatesm +".validationfull.pkl"
         object_name_correct = calculatesm +".validationcorrect.pkl"
         object_name_test = calculatesm +".test.pkl"      
         #object_name_test = "preprocessdata.pd_test_data.pkl"      
         
-        df_validationmcsfull = bu.loadObject(config_param["data.intermediatefolder"] + object_name_full)
+        #df_validationmcsfull = bu.loadObject(config_param["data.intermediatefolder"] + object_name_full)
         df_validationmcscorrect = bu.loadObject(config_param["data.intermediatefolder"] + object_name_correct)
         df_testdatamcs = bu.loadObject(config_param["data.intermediatefolder"] + object_name_test)
         
         Xcorrect = df_validationmcscorrect.loc[:,['NegativeScore','NeutralScore','PositiveScore']]
+        Xcorrect = Xcorrect.round(2)
         ycorrect = df_validationmcscorrect.loc[:,['ActualSentiment']]
 
         TextX = df_testdatamcs.loc[:,['NegativeScore','NeutralScore','PositiveScore']]
+        TextX = TextX.round(2)
         Testy = df_testdatamcs.loc[:,['ActualSentiment']]
         
         bu.saveExcelFile("Test Probabilities.xlsx", df_testdatamcs, config_param)
@@ -53,35 +57,38 @@ class ModelFunctions:
         
         ycorrect_positive.loc[:,'ActualSentiment'] = ycorrect_positive['ActualSentiment'].apply(lambda x: x if x == "Positive" else "Others")
         Testy_positive.loc[:,'ActualSentiment'] = Testy_positive['ActualSentiment'].apply(lambda x: x if x == "Positive" else "Others")
-        positive_accuracy, accuracy, y_prob_positive = self.compute_LogisticRegression(Xcorrect,ycorrect_positive,TextX,Testy_positive,TextX)
+        #positive_accuracy, accuracy, y_prob_positive = self.compute_LogisticRegression(Xcorrect,ycorrect_positive,TextX,Testy_positive,TextX)
+        positive_accuracy, accuracy, y_positive_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_positive,TextX,Testy_positive,TextX)
         str_output = str_output + "\nLR - Positive Accuracy:"
         str_output = str_output + str(accuracy)
         print("LR - Positive Accuracy:", accuracy)
 
         ycorrect_negative.loc[:,'ActualSentiment'] = ycorrect_negative['ActualSentiment'].apply(lambda x: x if x == "Negative" else "Others")
         Testy_negative.loc[:,'ActualSentiment'] = Testy_negative['ActualSentiment'].apply(lambda x: x if x == "Negative" else "Others")
-        negative_accuracy, accuracy, y_prob_negative = self.compute_LogisticRegression(Xcorrect,ycorrect_negative,TextX,Testy_negative,TextX)
+        #negative_accuracy, accuracy, y_prob_negative = self.compute_LogisticRegression(Xcorrect,ycorrect_negative,TextX,Testy_negative,TextX)
+        negative_accuracy, accuracy, y_negative_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_negative,TextX,Testy_negative,TextX)
         str_output = str_output + "\nLR - Negative Accuracy:"
         str_output = str_output + str(accuracy)
         print("LR - Negative Accuracy:", accuracy)
 
         ycorrect_neutral.loc[:,'ActualSentiment'] = ycorrect_neutral['ActualSentiment'].apply(lambda x: x if x == "Neutral" else "Others")
         Testy_neutral.loc[:,'ActualSentiment'] = Testy_neutral['ActualSentiment'].apply(lambda x: x if x == "Neutral" else "Others")
-        neutral_accuracy, accuracy, y_prob_neutral = self.compute_LogisticRegression(Xcorrect,ycorrect_neutral,TextX,Testy_neutral,TextX)
+        #neutral_accuracy, accuracy, y_prob_neutral = self.compute_LogisticRegression(Xcorrect,ycorrect_neutral,TextX,Testy_neutral,TextX)
+        neutral_accuracy, accuracy, y_neutral_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_neutral,TextX,Testy_neutral,TextX)
         str_output = str_output + "\nLR - Neutral Accuracy:"
         str_output = str_output + str(accuracy)     
         print("LR - Neutral Accuracy:", accuracy)
         
+            
         
-        
-        Xfull = df_validationmcsfull.loc[:,['NegativeScore','NeutralScore','PositiveScore']]
-        yfull = df_validationmcsfull.loc[:,['ActualSentiment']]        
-        yfull.loc[:,'ActualSentiment'] = yfull['ActualSentiment'].apply(lambda x: x if x == "Positive" else "Others")
-        Testy.loc[:,'ActualSentiment'] = Testy['ActualSentiment'].apply(lambda x: x if x == "Positive" else "Others")
-        positive_accuracy, accuracy, y_prob_full = self.compute_LogisticRegression(Xfull,yfull,TextX,Testy,TextX)
-        str_output = str_output + "\nLR - Positive Accuracy:"
-        str_output = str_output + str(accuracy)   
-        print("LR - Positive Accuracy:", accuracy)
+        #Xfull = df_validationmcsfull.loc[:,['NegativeScore','NeutralScore','PositiveScore']]
+        #yfull = df_validationmcsfull.loc[:,['ActualSentiment']]        
+        #yfull.loc[:,'ActualSentiment'] = yfull['ActualSentiment'].apply(lambda x: x if x == "Positive" else "Others")
+        #Testy.loc[:,'ActualSentiment'] = Testy['ActualSentiment'].apply(lambda x: x if x == "Positive" else "Others")
+        #positive_accuracy, accuracy, y_prob_full = self.compute_LogisticRegression(Xfull,yfull,TextX,Testy,TextX)
+        #str_output = str_output + "\nLR - Positive Accuracy:"
+        #str_output = str_output + str(accuracy)   
+        #print("LR - Positive FULL Accuracy:", accuracy)
         
         #pd_probability = pd.DataFrame(y_prob_positive,columns=['Positive'])
         #pd_probability['Negative'] = pd.Series(y_prob_negative, index=pd_probability.index)
@@ -89,21 +96,21 @@ class ModelFunctions:
         #print("All length:", len(y_prob_full))
         #pd_probability['All'] = pd.Series(y_prob_full, index=pd_probability.index)
         
-        df_testdatamcs['Positive Model'] = pd.Series(y_prob_positive, index=df_testdatamcs.index)
-        df_testdatamcs['Negative Model'] = pd.Series(y_prob_negative, index=df_testdatamcs.index)
-        df_testdatamcs['Neutral Model'] = pd.Series(y_prob_neutral, index=df_testdatamcs.index)
-        print("All length:", len(y_prob_full))
-        df_testdatamcs['All Model'] = pd.Series(y_prob_full, index=df_testdatamcs.index)
+        df_testdatamcs['Positive Model'] = pd.Series(y_positive_pred_class, index=df_testdatamcs.index)
+        df_testdatamcs['Negative Model'] = pd.Series(y_negative_pred_class, index=df_testdatamcs.index)
+        df_testdatamcs['Neutral Model'] = pd.Series(y_neutral_pred_class, index=df_testdatamcs.index)
+        
+        #print("All length:", len(y_prob_full))
+        #df_testdatamcs['All Model'] = pd.Series(y_prob_full, index=df_testdatamcs.index)
         
         #print("ycorrect length:", len(Testy))
         #pd_probability['ActualSentiment'] = Testy
         
-
-        calculatesm = config_param["execute.calculatesm"]
-        windowsize = config_param["creategraph.window_size"]
-        
         bu.saveExcelFile("Final Probabilities.xlsx", df_testdatamcs, config_param)
-        bu.saveTextFile(config_param["data.outputfolder"] + calculatesm + "_w" + windowsize + "_"+"result.txt", str_output)
+        
+        output_file_name = config_param["data.outputfolder"] + calculatesm + "_w" + windowsize + "_"+"output.txt"
+        bu.saveTextFile(output_file_name, str_output)
+        
         #DF_ForModel = pd.read_excel(full_path, sheet_name, header)
         #print(DF_ForModel.head())  
         #X = DF_ForModel.loc[:,['NegativeScore','NeutralScore','PositiveScore']]
@@ -144,11 +151,24 @@ class ModelFunctions:
         print("##########Computing Logistic regression##########")
         logreg = LogisticRegression()
         # train the model using X_train_dtm
+        print("X_train_dtm")
+        print(X_train_dtm)
+        print("y_train.values.ravel()")
+        print(y_train.values.ravel())
+        print("X_test_dtm")
+        print(X_test_dtm)
         logreg.fit(X_train_dtm, y_train.values.ravel())
         # make class predictions for X_test_dtm
         y_pred_class = logreg.predict(X_test_dtm)
+        print("y_pred_class")
+        print(y_pred_class)
+        print("y_test")
+        print(y_test)
         # calculate predicted probabilities for X_test_dtm (well calibrated)
         y_pred_prob = logreg.predict_proba(X_test_dtm)[:, 1]
+        print("y_pred_prob")
+        print(y_pred_prob)
+        
         #print(type(y_pred_prob))        
         #print(y_pred_prob)
         # calculate accuracy
@@ -161,6 +181,19 @@ class ModelFunctions:
         # calculate AUC
         #print(metrics.roc_auc_score(y_test, y_pred_prob))
         return logreg, accuracy, y_pred_prob
+        
+    def compute_SVM_Linear(self, X_train_dtm, y_train, X_test_dtm, y_test, X_test):
+        print("########## Computing SVM Linear##########")
+        # we create an instance of SVM and fit out data. We do not scale our
+        # data since we want to plot the support vectors
+        C = 5.0  # SVM regularization parameter
+        lin_svc = svm.LinearSVC(C=C).fit(X_train_dtm, y_train.values.ravel())
+        y_pred_class = lin_svc.predict(X_test_dtm)
+        print("print the confusion matrix")
+        print(metrics.confusion_matrix(y_test, y_pred_class))
+        print("calculate accuracy of class predictions")
+        accuracy = metrics.accuracy_score(y_test, y_pred_class)
+        return lin_svc, accuracy, y_pred_class
         
     def compute_SVM(self, X_train_dtm, y_train, X_test_dtm, y_test, X_test):
         print("########## Computing SVM ##########")
