@@ -1,0 +1,23 @@
+calculatesm: csm
+##########Computing Logistic regression##########
+print the confusion matrix
+[[519 468]
+ [211 511]]
+LR - Positive Accuracy: 0.602691632534
+##########Computing Logistic regression##########
+print the confusion matrix
+[[306 350]
+ [270 783]]
+LR - Negative Accuracy: 0.637214745465
+##########Computing Logistic regression##########
+print the confusion matrix
+[[   1  330]
+ [   0 1378]]
+LR - Neutral Accuracy: 0.806904622586
+##########Computing Logistic regression##########
+print the confusion matrix
+[[794 193]
+ [428 294]]
+LR - Positive Accuracy: 0.636629607958
+All length: 1709
+### Run 1 ### - End

@@ -1,0 +1,30 @@
+Total correct predictions including Two equal scores: 882
+Total two equal scores: 166
+Total correct predictions with one highest score: 716
+Total Incorrect Predictions: 827
+Accuracy %:  0.41895845523698066
+### Compute CSM ### - End
+Time taken by compute_csm(): 443.2986235201279
+calculatesm: csm
+##########Computing Logistic regression##########
+print the confusion matrix
+[[588 399]
+ [203 519]]
+LR - Positive Accuracy: 0.647747220597
+##########Computing Logistic regression##########
+print the confusion matrix
+[[351 305]
+ [277 776]]
+LR - Negative Accuracy: 0.659449970743
+##########Computing Logistic regression##########
+print the confusion matrix
+[[   2  329]
+ [   1 1377]]
+LR - Neutral Accuracy: 0.806904622586
+##########Computing Logistic regression##########
+print the confusion matrix
+[[817 170]
+ [427 295]]
+LR - Positive Accuracy: 0.650672908133
+All length: 1709
+### Run 1 ### - End

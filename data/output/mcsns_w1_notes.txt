@@ -1,0 +1,25 @@
+### Compute CSM ### - End
+Time taken by compute_csm(): 191.37750814233732
+calculatesm: mcsns
+##########Computing Logistic regression##########
+print the confusion matrix
+[[561 426]
+ [318 404]]
+LR - Positive Accuracy: 0.564657694558
+##########Computing Logistic regression##########
+print the confusion matrix
+[[227 429]
+ [206 847]]
+LR - Negative Accuracy: 0.628437682855
+##########Computing Logistic regression##########
+print the confusion matrix
+[[   3  328]
+ [   1 1377]]
+LR - Neutral Accuracy: 0.807489760094
+##########Computing Logistic regression##########
+print the confusion matrix
+[[928  59]
+ [659  63]]
+LR - Positive Accuracy: 0.579871269748
+All length: 1709
+### Run 1 ### - End
