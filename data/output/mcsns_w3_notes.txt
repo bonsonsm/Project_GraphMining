@@ -1,0 +1,23 @@
+calculatesm: mcsns
+##########Computing Logistic regression##########
+print the confusion matrix
+[[605 382]
+ [311 411]]
+LR - Positive Accuracy: 0.594499707431
+##########Computing Logistic regression##########
+print the confusion matrix
+[[242 414]
+ [242 811]]
+LR - Negative Accuracy: 0.616149795202
+##########Computing Logistic regression##########
+print the confusion matrix
+[[   3  328]
+ [   0 1378]]
+LR - Neutral Accuracy: 0.808074897601
+##########Computing Logistic regression##########
+print the confusion matrix
+[[901  86]
+ [585 137]]
+LR - Positive Accuracy: 0.607372732592
+All length: 1709
+### Run 1 ### - End

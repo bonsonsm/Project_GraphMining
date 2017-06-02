@@ -1,0 +1,21 @@
+##########Computing Logistic regression##########
+print the confusion matrix
+[[554 433]
+ [299 423]]
+LR - Positive Accuracy: 0.571679344646
+##########Computing Logistic regression##########
+print the confusion matrix
+[[230 426]
+ [234 819]]
+LR - Negative Accuracy: 0.613809245173
+##########Computing Logistic regression##########
+print the confusion matrix
+[[   1  330]
+ [   0 1378]]
+LR - Neutral Accuracy: 0.806904622586
+##########Computing Logistic regression##########
+print the confusion matrix
+[[939  48]
+ [639  83]]
+LR - Positive Accuracy: 0.598010532475
+All length: 1709
