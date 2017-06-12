@@ -113,28 +113,28 @@ class GraphTweetSentimentPrediction:
             pd_neutral_train = bu.loadObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_neutral_train.pkl")
             pd_positive_train = bu.loadObject(config_param["data.intermediatefolder"] + "preprocessdata.pd_positive_train.pkl")
             
-            negative_graph, avg_tokens_per_sentence_main = gu.createGraph(pd_negative_train, sentences_to_take, window_size)
-            neutral_graph, avg_tokens_per_sentence_main = gu.createGraph(pd_neutral_train, sentences_to_take, window_size)
+            #negative_graph, avg_tokens_per_sentence_main = gu.createGraph(pd_negative_train, sentences_to_take, window_size)
+            #neutral_graph, avg_tokens_per_sentence_main = gu.createGraph(pd_neutral_train, sentences_to_take, window_size)
             positive_graph, avg_tokens_per_sentence_main = gu.createGraph(pd_positive_train, sentences_to_take, window_size)
             
             str_output = ""
             str_output = str_output + "\n############ Create Graphs ##################"
-            str_output = str_output + "\nNegative Graph \nNodes:"+str(len(negative_graph.nodes()))+" Edges:"+str(len(negative_graph.edges()))
-            str_output = str_output + "\nNegative Graph \n"+gu.printGraphTable(negative_graph)
+            #str_output = str_output + "\nNegative Graph \nNodes:"+str(len(negative_graph.nodes()))+" Edges:"+str(len(negative_graph.edges()))
+            #str_output = str_output + "\nNegative Graph \n"+gu.printGraphTable(negative_graph)
             
-            str_output = str_output + "\nNeutral Graph \nNodes:"+str(len(neutral_graph.nodes()))+" Edges:"+str(len(neutral_graph.edges()))
-            str_output = str_output + "\nNeutral Graph \n"+gu.printGraphTable(neutral_graph)
+            #str_output = str_output + "\nNeutral Graph \nNodes:"+str(len(neutral_graph.nodes()))+" Edges:"+str(len(neutral_graph.edges()))
+            #str_output = str_output + "\nNeutral Graph \n"+gu.printGraphTable(neutral_graph)
             
             str_output = str_output + "\nPositive Graph\nNodes:"+str(len(positive_graph.nodes()))+" Edges:"+str(len(positive_graph.edges()))
             str_output = str_output + "\nPositive Graph \n"+gu.printGraphTable(positive_graph)
             
             str_output = str_output + "\n############ Create Graphs Completed ##################"
-            print("negative_graph: ",len(negative_graph.nodes()))
-            print("neutral_graph: ", len(neutral_graph.nodes()))
+            #print("negative_graph: ",len(negative_graph.nodes()))
+            #print("neutral_graph: ", len(neutral_graph.nodes()))
             print("positive_graph: ", len(positive_graph.nodes()))
             
-            bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.negative_graph.pkl", negative_graph)
-            bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.neutral_graph.pkl", neutral_graph)
+            #bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.negative_graph.pkl", negative_graph)
+            #bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.neutral_graph.pkl", neutral_graph)
             bu.saveObject(config_param["data.intermediatefolder"] + "creategraph.positive_graph.pkl", positive_graph)
             
             calculatesm = config_param["execute.calculatesm"]
