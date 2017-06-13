@@ -106,7 +106,7 @@ class GraphFunctions:
                 total_token_count = total_token_count + token_count
                 #print("token_count", token_count)
                 for i in range(token_count):
-                    #print("#### New Row ####")
+                    print("#### Next Token ####")
                     
                     if i == 0:
                         #print("i == 0")
@@ -146,15 +146,7 @@ class GraphFunctions:
                             tokens_added.append(tokens[i])
                         
                     if window_size == 2 and i>= 2:
-                        if DG.has_edge(tokens[i-1], tokens[i]):
-                            w = DG[tokens[i-1]][tokens[i]]['weight']
-                            w=w+1
-                            print("*** In 2 - HAS Edge**** Adding Weight ***",tokens[i-1],"->",tokens[i]," weigth:",w)
-                            DG.add_edges_from([(tokens[i-1], tokens[i])], weight=w)
-                        else:
-                            print("*** In 2 - NEW Edge**** Adding Weight ***",tokens[i-1],"->",tokens[i]," weigth:1")
-                            DG.add_edges_from([(tokens[i-1], tokens[i])], weight=1)
-                            
+                        
                         if DG.has_edge(tokens[i-2], tokens[i]):
                             w = DG[tokens[i-2]][tokens[i]]['weight']
                             w=w+1
@@ -164,6 +156,15 @@ class GraphFunctions:
                             print("*** In 2 - NEW Edge**** Adding Weight ***",tokens[i-2],"->",tokens[i]," weigth:1")
                             DG.add_edges_from([(tokens[i-2], tokens[i])], weight=1)
                         
+                        if DG.has_edge(tokens[i-2], tokens[i-1]):
+                            w = DG[tokens[i-2]][tokens[i-1]]['weight']
+                            w=w+1
+                            print("*** In 2 - HAS Edge**** Adding Weight ***",tokens[i-2],"->",tokens[i-1]," weigth:",w)
+                            DG.add_edges_from([(tokens[i-2], tokens[i-1])], weight=w)
+                        else:
+                            print("*** In 2 - NEW Edge**** Adding Weight ***",tokens[i-2],"->",tokens[i-1]," weigth:1")
+                            DG.add_edges_from([(tokens[i-2], tokens[i-1])], weight=1)
+                        ################Adding to Tokens################################    
                         if tokens[i-2] not in tokens_added:
                             if sentence_count >= 2:
                                 node_id= node_id + i
@@ -185,10 +186,21 @@ class GraphFunctions:
                                 node_id= node_id + 1
                             else:
                                 node_id= node_id + 1
-
                             DG.node[tokens[i]]['order'] = node_id
                             tokens_added.append(tokens[i])
-                        
+
+                        ################For the last nodes################################  
+                        if token_count - i == 1:
+                            print("*** Last Nodes ***",tokens[i-1],"->",tokens[i])
+                            if DG.has_edge(tokens[i-1], tokens[i]):
+                                w = DG[tokens[i-1]][tokens[i]]['weight']
+                                w=w+1
+                                print("*** In 2 - HAS Edge**** Adding Weight ***",tokens[i-1],"->",tokens[i]," weigth:",w)
+                                DG.add_edges_from([(tokens[i-1], tokens[i])], weight=w)
+                            else:
+                                print("*** In 2 - NEW Edge**** Adding Weight ***",tokens[i-1],"->",tokens[i]," weigth:1")
+                                DG.add_edges_from([(tokens[i-1], tokens[i])], weight=1)
+                            
                     if window_size == 3 and i>= 3:
                         if DG.has_edge(tokens[i-3], tokens[i]):
                             w = DG[tokens[i-3]][tokens[i]]['weight']
@@ -208,16 +220,70 @@ class GraphFunctions:
                             print("*** In 3b - NEW Edge**** Adding Weight ***",tokens[i-3],"->",tokens[i-1]," weigth:1")
                             DG.add_edges_from([(tokens[i-3], tokens[i-1])], weight=1)
                         
-                        if DG.has_edge(tokens[i-2], tokens[i]):
-                            w = DG[tokens[i-2]][tokens[i]]['weight']
+                        if DG.has_edge(tokens[i-3], tokens[i-2]):
+                            w = DG[tokens[i-3]][tokens[i-2]]['weight']
                             w=w+1
-                            DG.add_edges_from([(tokens[i-2], tokens[i])], weight=w)
-                            print("*** In 3c - HAS Edge**** Adding Weight ***",tokens[i-2],"->",tokens[i]," weigth:",w)
+                            DG.add_edges_from([(tokens[i-3], tokens[i-2])], weight=w)
+                            print("*** In 3c - HAS Edge**** Adding Weight ***",tokens[i-3],"->",tokens[i-2]," weigth:",w)
                         else:
-                            print("*** In 3c - NEW Edge**** Adding Weight ***",tokens[i-2],"->",tokens[i]," weigth:1")
-                            DG.add_edges_from([(tokens[i-2], tokens[i])], weight=1)
+                            print("*** In 3c - NEW Edge**** Adding Weight ***",tokens[i-3],"->",tokens[i-2]," weigth:1")
+                            DG.add_edges_from([(tokens[i-3], tokens[i-2])], weight=1)
                         
-
+                        ################Adding to Tokens################################    
+                        if tokens[i-3] not in tokens_added:
+                            if sentence_count >= 2:
+                                node_id= node_id + i
+                            else:
+                                node_id= node_id + i-1
+                            DG.node[tokens[i-3]]['order'] = node_id
+                            tokens_added.append(tokens[i-3])
+                            
+                        if tokens[i-2] not in tokens_added:
+                            if sentence_count >= 2:
+                                node_id= node_id + i
+                            else:
+                                node_id= node_id + i-1
+                            DG.node[tokens[i-2]]['order'] = node_id
+                            tokens_added.append(tokens[i-2])
+                            
+                        if tokens[i-1] not in tokens_added:
+                            if sentence_count >= 2:
+                                node_id= node_id + i
+                            else:
+                                node_id= node_id + i-1
+                            DG.node[tokens[i-1]]['order'] = node_id
+                            tokens_added.append(tokens[i-1])
+                        
+                        if tokens[i] not in tokens_added:
+                            if sentence_count >= 2:
+                                node_id= node_id + 1
+                            else:
+                                node_id= node_id + 1
+                            DG.node[tokens[i]]['order'] = node_id
+                            tokens_added.append(tokens[i])
+                            
+                        ################For the last nodes################################  
+                        if token_count - i == 2:
+                            print("*** Last Nodes ***",tokens[i-2],"->",tokens[i-1])
+                            print("*** Last Nodes ***",tokens[i-1],"->",tokens[i])
+                            
+                            if DG.has_edge(tokens[i-1], tokens[i]):
+                                w = DG[tokens[i-1]][tokens[i]]['weight']
+                                w=w+1
+                                print("*** In 2 - HAS Edge**** Adding Weight ***",tokens[i-1],"->",tokens[i]," weigth:",w)
+                                DG.add_edges_from([(tokens[i-1], tokens[i])], weight=w)
+                            else:
+                                print("*** In 2 - NEW Edge**** Adding Weight ***",tokens[i-1],"->",tokens[i]," weigth:1")
+                                DG.add_edges_from([(tokens[i-1], tokens[i])], weight=1)
+                            
+                            if DG.has_edge(tokens[i-1], tokens[i]):
+                                w = DG[tokens[i-1]][tokens[i]]['weight']
+                                w=w+1
+                                print("*** In 2 - HAS Edge**** Adding Weight ***",tokens[i-1],"->",tokens[i]," weigth:",w)
+                                DG.add_edges_from([(tokens[i-1], tokens[i])], weight=w)
+                            else:
+                                print("*** In 2 - NEW Edge**** Adding Weight ***",tokens[i-1],"->",tokens[i]," weigth:1")
+                                DG.add_edges_from([(tokens[i-1], tokens[i])], weight=1)
                             
             sentence_count=sentence_count + 1
             
