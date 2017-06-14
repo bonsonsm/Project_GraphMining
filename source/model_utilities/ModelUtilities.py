@@ -58,25 +58,27 @@ class ModelFunctions:
         ycorrect_positive.loc[:,'ActualSentiment'] = ycorrect_positive['ActualSentiment'].apply(lambda x: x if x == "Positive" else "Others")
         Testy_positive.loc[:,'ActualSentiment'] = Testy_positive['ActualSentiment'].apply(lambda x: x if x == "Positive" else "Others")
         #positive_accuracy, accuracy, y_prob_positive = self.compute_LogisticRegression(Xcorrect,ycorrect_positive,TextX,Testy_positive,TextX)
-        positive_accuracy, accuracy, y_positive_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_positive,TextX,Testy_positive,TextX)
-        str_output = str_output + "\nLR - Positive Accuracy:"
-        str_output = str_output + str(accuracy)
+        positive_accuracy, accuracy, confusion_matrix, y_positive_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_positive,TextX,Testy_positive,TextX)
+        str_output = str_output + "\n SVM_Linear - Positive Accuracy:"
+        #print(confusion_matrix)
+        str_output = str_output + str(accuracy) +  "\n" + str(confusion_matrix)
         print("LR - Positive Accuracy:", accuracy)
 
         ycorrect_negative.loc[:,'ActualSentiment'] = ycorrect_negative['ActualSentiment'].apply(lambda x: x if x == "Negative" else "Others")
         Testy_negative.loc[:,'ActualSentiment'] = Testy_negative['ActualSentiment'].apply(lambda x: x if x == "Negative" else "Others")
         #negative_accuracy, accuracy, y_prob_negative = self.compute_LogisticRegression(Xcorrect,ycorrect_negative,TextX,Testy_negative,TextX)
-        negative_accuracy, accuracy, y_negative_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_negative,TextX,Testy_negative,TextX)
-        str_output = str_output + "\nLR - Negative Accuracy:"
-        str_output = str_output + str(accuracy)
+        negative_accuracy, accuracy, confusion_matrix, y_negative_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_negative,TextX,Testy_negative,TextX)
+        str_output = str_output + "\n SVM_Linear - Negative Accuracy:"
+        #print(confusion_matrix)
+        str_output = str_output + str(accuracy) +  "\n" + str(confusion_matrix)
         print("LR - Negative Accuracy:", accuracy)
 
         ycorrect_neutral.loc[:,'ActualSentiment'] = ycorrect_neutral['ActualSentiment'].apply(lambda x: x if x == "Neutral" else "Others")
         Testy_neutral.loc[:,'ActualSentiment'] = Testy_neutral['ActualSentiment'].apply(lambda x: x if x == "Neutral" else "Others")
         #neutral_accuracy, accuracy, y_prob_neutral = self.compute_LogisticRegression(Xcorrect,ycorrect_neutral,TextX,Testy_neutral,TextX)
-        neutral_accuracy, accuracy, y_neutral_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_neutral,TextX,Testy_neutral,TextX)
-        str_output = str_output + "\nLR - Neutral Accuracy:"
-        str_output = str_output + str(accuracy)     
+        neutral_accuracy, accuracy, confusion_matrix, y_neutral_pred_class = self.compute_SVM_Linear(Xcorrect,ycorrect_neutral,TextX,Testy_neutral,TextX)
+        str_output = str_output + "\n SVM_Linear  - Neutral Accuracy:"
+        str_output = str_output + str(accuracy) + "\n" + str(confusion_matrix)
         print("LR - Neutral Accuracy:", accuracy)
         
             
@@ -190,10 +192,11 @@ class ModelFunctions:
         lin_svc = svm.LinearSVC(C=C).fit(X_train_dtm, y_train.values.ravel())
         y_pred_class = lin_svc.predict(X_test_dtm)
         print("print the confusion matrix")
-        print(metrics.confusion_matrix(y_test, y_pred_class))
+        confusion_matrix = metrics.confusion_matrix(y_test, y_pred_class)
+        print(confusion_matrix)
         print("calculate accuracy of class predictions")
         accuracy = metrics.accuracy_score(y_test, y_pred_class)
-        return lin_svc, accuracy, y_pred_class
+        return lin_svc, accuracy, confusion_matrix, y_pred_class
         
     def compute_SVM(self, X_train_dtm, y_train, X_test_dtm, y_test, X_test):
         print("########## Computing SVM ##########")
